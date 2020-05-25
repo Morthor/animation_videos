@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -28,7 +30,7 @@ class Home extends StatelessWidget {
               return SecondPage();
             }
           )),
-          child: Text('Go to second page'),
+          child: Text('Tap to see the kitty'),
         ),
       ),
     );
@@ -40,18 +42,41 @@ class SecondPage extends StatefulWidget {
   _SecondPageState createState() => _SecondPageState();
 }
 
-class _SecondPageState extends State<SecondPage> {
+class _SecondPageState extends State<SecondPage> with SingleTickerProviderStateMixin {
+  AnimationController _animationController;
+
+  @override
+  void initState() {
+    _animationController= AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 150)
+    );
+    Timer(Duration(milliseconds: 200), () => _animationController.forward());
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Second Page'),
+        title: Text('Kitty Page'),
         centerTitle: true,
       ),
       body: Stack(
         children: <Widget>[
-          TextAndImage(),
-          Bottom(),
+          TextAndImage(
+            animationController: _animationController,
+          ),
+          Bottom(
+            animationController: _animationController,
+          ),
         ],
       ),
     );
@@ -59,6 +84,12 @@ class _SecondPageState extends State<SecondPage> {
 }
 
 class TextAndImage extends StatelessWidget {
+  final AnimationController animationController;
+
+  TextAndImage({
+    @required this.animationController,
+  });
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -66,12 +97,21 @@ class TextAndImage extends StatelessWidget {
       child: SafeArea(
         child: Column(
           children: <Widget>[
-            Container(
-              padding: EdgeInsets.all(16.0),
-              alignment: Alignment.centerLeft,
-              child: Text('An interesting title',
-                style: TextStyle(
-                  fontSize: 24,
+            SlideTransition(
+              position: Tween<Offset>(
+                begin: Offset(-1,0),
+                end: Offset.zero,
+              ).animate(animationController),
+              child: FadeTransition(
+                opacity: animationController,
+                child: Container(
+                  padding: EdgeInsets.all(16.0),
+                  alignment: Alignment.centerLeft,
+                  child: Text('An interesting title',
+                    style: TextStyle(
+                      fontSize: 24,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -98,32 +138,47 @@ class TextAndImage extends StatelessWidget {
 
 
 class Bottom extends StatelessWidget {
+  final AnimationController animationController;
+
+  Bottom({
+    @required this.animationController,
+  });
+
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Container(
-        padding: EdgeInsets.all(10),
-        height: 80,
-        color: Theme.of(context).primaryColor,
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('Nice Kitty!',
-              style: TextStyle(
-                fontSize: 22,
-                color: Theme.of(context).primaryTextTheme.headline5.color,
-                shadows: [
-                  Shadow(
-                    color: Colors.black,
-                    offset: Offset(1,1),
-                    blurRadius: 2
-                  )
-                ],
-              ),
+    return SlideTransition(
+      position: Tween<Offset>(
+        begin: Offset(0,1),
+        end: Offset.zero,
+      ).animate(animationController),
+      child: FadeTransition(
+        opacity: animationController,
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            padding: EdgeInsets.all(10),
+            height: 80,
+            color: Theme.of(context).primaryColor,
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text('Nice Kitty!',
+                  style: TextStyle(
+                    fontSize: 22,
+                    color: Theme.of(context).primaryTextTheme.headline5.color,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black,
+                        offset: Offset(1,1),
+                        blurRadius: 2
+                      )
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
