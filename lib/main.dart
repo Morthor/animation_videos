@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -76,8 +75,10 @@ class TextAndImage extends StatelessWidget {
                 ),
               ),
             ),
-            Container(
-              child: ClipRect(
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(15)),
                 child: Align(
                   heightFactor: 0.826,
                   alignment: Alignment.topLeft,
@@ -104,14 +105,22 @@ class Bottom extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(10),
         height: 80,
-        color: Colors.white,
+        color: Theme.of(context).primaryColor,
         child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text('Nice Kitty!',
               style: TextStyle(
-                  fontSize: 22
+                fontSize: 22,
+                color: Theme.of(context).primaryTextTheme.headline5.color,
+                shadows: [
+                  Shadow(
+                    color: Colors.black,
+                    offset: Offset(1,1),
+                    blurRadius: 2
+                  )
+                ],
               ),
             ),
           ],
